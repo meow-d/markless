@@ -159,7 +159,7 @@ function bootstrap(context) {
 		})()]],
 		["quote", ["blockquote", (() => {
 			const quoteDecoration = vscode.window.createTextEditorDecorationType({
-				textDecoration: "none; filter: drop-shadow(0px 0px 40px);",
+				textDecoration: "none;",
 			});
 			const quoteBarDecoration = vscode.window.createTextEditorDecorationType({
 				color: "transparent",
