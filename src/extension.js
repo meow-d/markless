@@ -322,12 +322,18 @@ function bootstrap(context) {
 		["link", ["image", (start, end, node) => {
 			const text = state.text.slice(start, end);
 			const match = /!\[(.*)\]\(.+?\)/.exec(text);
+			console.log("text: "+ JSON.stringify(text));
 			if (!match) return;
 			addDecoration(hideDecoration, start, start + 2);
 			addDecoration(getUrlDecoration(true), start + match[1].length + 2, end);
+			console.log(JSON.stringify(node));
+			if (node.url.startsWith("http")) {
+				state.imageList.push([posToRange(start, end), node.url, node.alt || " "]);
+				return;
+			}
 			const editor = vscode.window.activeTextEditor;
 			const mdFilePath = editor.document.uri.fsPath;
-			const imgPath =path.resolve(path.dirname(mdFilePath), node.url);
+			const imgPath = path.resolve("file://", path.dirname(mdFilePath), node.url);
 			state.imageList.push([posToRange(start, end), imgPath, node.alt || " "]);
 		}]],
 		["emphasis", ["delete", (() => {
