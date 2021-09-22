@@ -280,7 +280,8 @@ function bootstrap(context) {
 					// console.log('%c ', `font-size:400px; background:url(${svgUri}) no-repeat; background-size: contain;`);
 					return getSvgDecoration(svgUri, false); // Using mermaid theme instead
 				});
-				return (source, numLines) => _getTexDecoration(source, state.darkMode, (numLines + 2) * state.lineHeight, state.fontFamily);
+				// the same svg size problem as latex.
+				return (source, numLines) => _getTexDecoration(source, state.darkMode, (numLines + 2) * state.lineHeight * 12, state.fontFamily);
 			})();
 			return async (start, end, node) => {
 				if (!(node.lang === "mermaid")) return;
