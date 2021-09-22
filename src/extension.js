@@ -54,7 +54,7 @@ function registerWebviewViewProvider (context) {
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider("test.webview", {
 		resolveWebviewView: (webviewView) => {
 			webviewView.webview.options = { enableScripts: true };
-			const mermaidScriptUri = webviewView.webview.asWebviewUri(vscode.Uri.joinPath(context.extensionUri, 'node_modules', 'mermaid', 'dist', 'mermaid.min.js'));
+			const mermaidScriptUri = "https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.12.1/mermaid.min.js";
 			webviewView.webview.html = `
 					<!DOCTYPE html>
 					<html lang="en">
