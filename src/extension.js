@@ -227,13 +227,17 @@ function bootstrap(context) {
 					const svgUri = svgToUri(texToSvg(texString, display, height));
 					return getSvgDecoration(svgUri, darkMode);
 				});
-				return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, numLines * state.lineHeight);
+				// return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, numLines * state.lineHeight);
+				// For the time being, i don't know why size goes up with the number of lines in the formula, 
+				// so the height is temporarily set to acceptable 12. 
+				return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, 12);
+
 			})();
 			return (start, end) => {
 				const latexText = state.text.slice(start, end);
 				const match = /^(\$+)([^]+)\1/.exec(latexText);
 				if (!match) return;
-				// console.log("math", latexText);
+				console.log("math", latexText);
 				const numLines = 1 + (latexText.match(/\n/g)||[]).length;
 				addDecoration(getTexDecoration(match[2], match[1].length > 1, numLines), start, end);
 			};
