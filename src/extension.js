@@ -126,10 +126,11 @@ function bootstrap(context) {
     const lineHeight = vscode.workspace.getConfiguration("editor").get("lineHeight", 0);
     // https://github.com/microsoft/vscode/blob/45aafeb326d0d3d56cbc9e2932f87e368dbf652d/src/vs/editor/common/config/fontInfo.ts#L54
     if (lineHeight === 0) {
-        state.lineHeight = Math.round(process.platform == "darwin" ? 1.5 : 1.35 * state.fontSize);
+        state.lineHeight = Math.round(process.platform == "darwin" ? 1.5 * state.fontSize : 1.35 * state.fontSize);
     } else if (lineHeight < 8) {
         state.lineHeight = 8;
     }
+	// console.log("lineHeight: ", state.lineHeight, "fontSize:", state.fontSize);
     state.autoImagePreview = state.config.get('inlineImage.autoPreview');
 
 	// @ts-ignore
@@ -227,11 +228,8 @@ function bootstrap(context) {
 					const svgUri = svgToUri(texToSvg(texString, display, height));
 					return getSvgDecoration(svgUri, darkMode);
 				});
-				// return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, numLines * state.lineHeight);
-				// For the time being, i don't know why size goes up with the number of lines in the formula, 
-				// so the height is temporarily set to acceptable 12. 
-				return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, 12);
-
+				console.log("lineHeight: ", state.lineHeight);
+				return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, numLines * state.lineHeight);
 			})();
 			return (start, end) => {
 				const latexText = state.text.slice(start, end);
@@ -280,8 +278,7 @@ function bootstrap(context) {
 					// console.log('%c ', `font-size:400px; background:url(${svgUri}) no-repeat; background-size: contain;`);
 					return getSvgDecoration(svgUri, false); // Using mermaid theme instead
 				});
-				// the same svg size problem as latex.
-				return (source, numLines) => _getTexDecoration(source, state.darkMode, (numLines + 2) * state.lineHeight * 12, state.fontFamily);
+				return (source, numLines) => _getTexDecoration(source, state.darkMode, (numLines + 2) * state.lineHeight, state.fontFamily);
 			})();
 			return async (start, end, node) => {
 				if (!(node.lang === "mermaid")) return;
