@@ -141,7 +141,8 @@ function bootstrap(context) {
 			}));
 			return (start, end, node) => {
 				// console.log("Heading node", node);
-				addDecoration(getEnlargeDecoration(5 * state.fontSize / (2 + node.depth)), start + node.depth + 1, end);
+				// console.log("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
+				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), start + node.depth + 1, end);
 				addDecoration(hideDecoration, start, start + node.depth + 1);
 			};
 		})()]],
