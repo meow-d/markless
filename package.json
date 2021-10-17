@@ -3,7 +3,7 @@
 	"publisher": "sean10",
 	"displayName": "Markless_sean10",
 	"description": "Inline markdown preview.  Vim mode and WYSIWYG mermaid, latex and image rendering. Support something custom which modified by sean10.",
-	"version": "1.0.15",
+	"version": "1.0.16",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
