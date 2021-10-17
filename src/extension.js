@@ -218,7 +218,11 @@ function bootstrap(context) {
 				const textPosition = node.children[0].position;
 				const textStart = textPosition.start.offset;
 				const textEnd = textPosition.end.offset;
-				addDecoration(node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
+				if (!node.isOrdered) {
+					addDecoration(node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
+				}
+				// console.log("wc: node: ", JSON.stringify(node));
+				// console.log("wc: listLevel: ", listLevel);
 				addDecoration(getlistRainbowDecoration(listLevel), textStart, textEnd);
 			};
 		})()]],

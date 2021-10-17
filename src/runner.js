@@ -86,6 +86,14 @@ async function visitNodes(node) {
         if (curNode.children) {
             stack.push(...curNode.children.map(c => [c, listLevel]));
         }
+        if (curNode.type == "list" && curNode.children && curNode.ordered) {
+            curNode.children = curNode.children.map((item) => {
+                item['isOrdered'] = true;
+                return item;
+            });
+            // console.log("visit Node: ", JSON.stringify(curNode.children));
+
+        }
     }
 }
 
