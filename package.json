@@ -28,11 +28,11 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/tejasvi/markless"
+		"url": "https://github.com/sean10/markless"
 	},
 	"icon": "assets/icon.png",
 	"bugs": {
-		"url": "https://github.com/tejasvi/markless"
+		"url": "https://github.com/sean10/markless"
 	},
 	"activationEvents": [
 		"onLanguage:markdown"
