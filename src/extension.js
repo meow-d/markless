@@ -142,8 +142,19 @@ function bootstrap(context) {
 			return (start, end, node) => {
 				// console.log("Heading node", node);
 				// console.log("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
-				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), start + node.depth + 1, end);
-				addDecoration(hideDecoration, start, start + node.depth + 1);
+				let editor = vscode.window.activeTextEditor;
+				// remark's position.start.line index is from 1 , not from 0, thus, need to minus 1 is the actual line number in vscode.editor.
+				let range = new vscode.Range(editor.document.lineAt(node.position.start.line - 1).range.start, editor.document.lineAt(node.position.start.line - 1).range.end);
+				let value = editor.document.getText(range);
+				// console.log("range:", range, "content:", value);
+				let endSymbolNeedDecoration = 0;
+				if (value.startsWith("#")){
+					endSymbolNeedDecoration = start + node.depth + 1;
+				} else {
+					endSymbolNeedDecoration = start;
+				}
+				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
+				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
 			};
 		})()]],
 		["horizontalRule", ["thematicBreak", (() => {
