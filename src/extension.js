@@ -153,8 +153,24 @@ function bootstrap(context) {
 				} else {
 					endSymbolNeedDecoration = start;
 				}
+				function delDecoration(decoration, currentLine) {
+					let decList = state.decorationRanges.get(decoration);
+					for (let i=0; i < decList.length; i++) {
+						if (currentLine == decList[i].start.line) {
+							decList.splice(i, 1);
+							break;
+						}
+					}
+				}
+
 				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
 				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
+				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
+
+				if (node.position.start.line - 1 == editor.selection.active.line) {
+					delDecoration(hideDecoration, editor.selection.active.line);
+					delDecoration(getEnlargeDecoration, editor.selection.active.line);
+				}
 			};
 		})()]],
 		["horizontalRule", ["thematicBreak", (() => {
