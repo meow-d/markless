@@ -163,7 +163,6 @@ function bootstrap(context) {
 					}
 				}
 
-
 				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
 				if (node.position.start.line - 1 == editor.selection.active.line) {
 					delDecoration(hideDecoration, editor.selection.active.line);
@@ -261,14 +260,14 @@ function bootstrap(context) {
 					const svgUri = svgToUri(texToSvg(texString, display, height));
 					return getSvgDecoration(svgUri, darkMode);
 				});
-				console.log("lineHeight: ", state.lineHeight);
+				// console.log("lineHeight: ", state.lineHeight);
 				return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, numLines * state.lineHeight);
 			})();
 			return (start, end) => {
 				const latexText = state.text.slice(start, end);
 				const match = /^(\$+)([^]+)\1/.exec(latexText);
 				if (!match) return;
-				console.log("math", latexText);
+				// console.log("math", latexText);
 				const numLines = 1 + (latexText.match(/\n/g)||[]).length;
 				addDecoration(getTexDecoration(match[2], match[1].length > 1, numLines), start, end);
 			};
@@ -357,11 +356,11 @@ function bootstrap(context) {
 		["link", ["image", (start, end, node) => {
 			const text = state.text.slice(start, end);
 			const match = /!\[(.*)\]\(.+?\)/.exec(text);
-			console.log("text: "+ JSON.stringify(text));
+			// console.log("text: "+ JSON.stringify(text));
 			if (!match) return;
 			addDecoration(hideDecoration, start, start + 2);
 			addDecoration(getUrlDecoration(true), start + match[1].length + 2, end);
-			console.log(JSON.stringify(node));
+			// console.log(JSON.stringify(node));
 			if (node.url.startsWith("http")) {
 				state.imageList.push([posToRange(start, end), node.url, node.alt || " "]);
 				return;
