@@ -92,7 +92,11 @@ async function visitNodes(node) {
                 return item;
             });
             // console.log("visit Node: ", JSON.stringify(curNode.children));
-
+        } else if (curNode.type == "heading" && curNode.children) {
+            curNode.children = curNode.children.map((item) => {
+                item['headingDepth'] = curNode.depth;
+                return item;
+            });
         }
     }
 }

@@ -1,9 +1,11 @@
 const vscode = require('vscode');
-const { hideDecoration, transparentDecoration, getUrlDecoration, getSvgDecoration } = require('./common-decorations');
+const { hideDecoration, transparentDecoration, getUrlDecoration, getSvgDecoration, delDecoration } = require('./common-decorations');
 const { state } = require('./state');
 const {  memoize, nodeToHtml, svgToUri, htmlToSvg, DefaultMap, texToSvg, enableHoverImage, path } = require('./util');
 const { triggerUpdateDecorations, addDecoration, posToRange }  = require('./runner');
 const cheerio = require('cheerio');
+
+const editor = vscode.window.activeTextEditor;
 
 let config = vscode.workspace.getConfiguration("markless");
 
@@ -142,7 +144,7 @@ function bootstrap(context) {
 			return (start, end, node) => {
 				// console.log("Heading node", node);
 				// console.log("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
-				let editor = vscode.window.activeTextEditor;
+				
 				// remark's position.start.line index is from 1 , not from 0, thus, need to minus 1 is the actual line number in vscode.editor.
 				let range = new vscode.Range(editor.document.lineAt(node.position.start.line - 1).range.start, editor.document.lineAt(node.position.start.line - 1).range.end);
 				let value = editor.document.getText(range);
@@ -153,20 +155,11 @@ function bootstrap(context) {
 				} else {
 					endSymbolNeedDecoration = start;
 				}
-				function delDecoration(decoration, currentLine) {
-					let decList = state.decorationRanges.get(decoration);
-					for (let i=0; i < decList.length; i++) {
-						if (currentLine == decList[i].start.line) {
-							decList.splice(i, 1);
-							break;
-						}
-					}
-				}
 
 				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
 				if (node.position.start.line - 1 == editor.selection.active.line) {
-					delDecoration(hideDecoration, editor.selection.active.line);
-					delDecoration(getEnlargeDecoration, editor.selection.active.line);
+					delDecoration(state, hideDecoration, editor.selection.active.line);
+					delDecoration(state, getEnlargeDecoration, editor.selection.active.line);
 				} else {
 					addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
 					addDecoration(hideDecoration, start, endSymbolNeedDecoration);
@@ -287,10 +280,21 @@ function bootstrap(context) {
 				border: "outset",
 				borderRadius: "5px",
 			})
-			return (start, end) => {
-				addDecoration(codeDecoration, start, end);
-				addDecoration(transparentDecoration, start, start + 1);
-				addDecoration(transparentDecoration, end - 1, end);
+			return (start, end, node) => {
+				console.log("inlineCode: ", node);
+				// let headingDepth = node.headingDepth + 1;
+				// if (!headingDepth){
+				// 	headingDepth = 0;
+				// }
+				if (node.position.start.line - 1 == editor.selection.active.line) {
+					delDecoration(state, codeDecoration, editor.selection.active.line);
+					delDecoration(state, transparentDecoration, editor.selection.active.line);
+					delDecoration(state, transparentDecoration, editor.selection.active.line);
+				} else {
+					addDecoration(codeDecoration, start, end);
+					addDecoration(transparentDecoration, start, start + 1);
+					addDecoration(transparentDecoration, end - 1, end);
+				}
 			};
 		})()]],
 		["mermaid", ["code", (() => {
