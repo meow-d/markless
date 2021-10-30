@@ -163,13 +163,14 @@ function bootstrap(context) {
 					}
 				}
 
-				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
-				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
-				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
 
+				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
 				if (node.position.start.line - 1 == editor.selection.active.line) {
 					delDecoration(hideDecoration, editor.selection.active.line);
 					delDecoration(getEnlargeDecoration, editor.selection.active.line);
+				} else {
+					addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
+					addDecoration(hideDecoration, start, endSymbolNeedDecoration);
 				}
 			};
 		})()]],
