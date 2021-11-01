@@ -135,6 +135,16 @@ function bootstrap(context) {
 	// console.log("lineHeight: ", state.lineHeight, "fontSize:", state.fontSize);
     state.autoImagePreview = state.config.get('inlineImage.autoPreview');
 
+	const delDecorationIfCurrentLine = (node, decoration, start, end) => {
+		// console.log("decoration: ", decoration, "others:", others);
+
+		if (node.position.start.line - 1 == editor.selection.active.line) {
+			delDecoration(state, decoration, editor.selection.active.line);
+		} else {
+			addDecoration(decoration, start, end);
+		}
+	}
+
 	// @ts-ignore
 	state.types = new Map([
 		["heading", ["heading", (() => {
@@ -157,13 +167,8 @@ function bootstrap(context) {
 				}
 
 				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
-				if (node.position.start.line - 1 == editor.selection.active.line) {
-					delDecoration(state, hideDecoration, editor.selection.active.line);
-					delDecoration(state, getEnlargeDecoration, editor.selection.active.line);
-				} else {
-					addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
-					addDecoration(hideDecoration, start, endSymbolNeedDecoration);
-				}
+				delDecorationIfCurrentLine(node, hideDecoration, start, endSymbolNeedDecoration);
+				delDecorationIfCurrentLine(node, getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
 			};
 		})()]],
 		["horizontalRule", ["thematicBreak", (() => {
@@ -175,7 +180,7 @@ function bootstrap(context) {
 					textDecoration: "none; position: absolute; background: #ffaa00; top: 0.49em; bottom: 0.49em; width: 100%; mix-blend-mode: luminosity; border: outset;",
 				}
 			});
-			return (start, end) => {
+			return (start, end, node) => {
 				addDecoration(horizontalRuleDecoration, start, end);
 			};
 		})()]],
@@ -190,14 +195,14 @@ function bootstrap(context) {
 					textDecoration: "none; position: absolute; background: #ffaa00; top: -0.2em; bottom: -0.2em; width: 3px; border-radius: 99px; mix-blend-mode: luminosity;",
 				}
 			});
-			return (start, end) => {
-				addDecoration(quoteDecoration, start, end);
+			return (start, end, node) => {
+				delDecorationIfCurrentLine(node, quoteDecoration, start, end);
 				const text = state.text.slice(start, end);
 				const regEx = /^ {0,3}>/mg;
 				let match;
 				while ((match = regEx.exec(text))) {
 					// console.log("Quote: ", match);
-					addDecoration(quoteBarDecoration, start + match.index + match[0].length - 1, start + match.index + match[0].length);
+					delDecorationIfCurrentLine(node, quoteBarDecoration, start + match.index + match[0].length - 1, start + match.index + match[0].length);
 				}
 			};
 		})()]],
@@ -240,11 +245,11 @@ function bootstrap(context) {
 				const textStart = textPosition.start.offset;
 				const textEnd = textPosition.end.offset;
 				if (!node.isOrdered) {
-					addDecoration(node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
+					delDecorationIfCurrentLine(node, node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
 				}
 				// console.log("wc: node: ", JSON.stringify(node));
 				// console.log("wc: listLevel: ", listLevel);
-				addDecoration(getlistRainbowDecoration(listLevel), textStart, textEnd);
+				delDecorationIfCurrentLine(node, getlistRainbowDecoration(listLevel), textStart, textEnd);
 			};
 		})()]],
 		["latex", ["math", (() => {
@@ -256,7 +261,7 @@ function bootstrap(context) {
 				// console.log("lineHeight: ", state.lineHeight);
 				return (texString, display, numLines) => _getTexDecoration(texString, display, state.darkMode, state.fontSize, numLines * state.lineHeight);
 			})();
-			return (start, end) => {
+			return (start, end, node) => {
 				const latexText = state.text.slice(start, end);
 				const match = /^(\$+)([^]+)\1/.exec(latexText);
 				if (!match) return;
@@ -266,13 +271,13 @@ function bootstrap(context) {
 			};
 		})()]],
 		["latex", ["inlineMath", (start, end) => state.types.get("math")(start, end)]],
-		["emphasis", ["emphasis", (start, end) => {
-			addDecoration(hideDecoration, start, start + 1);
-			addDecoration(hideDecoration, end - 1, end);
+		["emphasis", ["emphasis", (start, end, node) => {
+			delDecorationIfCurrentLine(node, hideDecoration, start, start + 1);
+			delDecorationIfCurrentLine(node, hideDecoration, end - 1, end);
 		}]],
-		["emphasis", ["strong", (start, end) => {
-			addDecoration(hideDecoration, start, start + 2);
-			addDecoration(hideDecoration, end - 2, end);
+		["emphasis", ["strong", (start, end, node) => {
+			delDecorationIfCurrentLine(node, hideDecoration, start, start + 2);
+			delDecorationIfCurrentLine(node, hideDecoration, end - 2, end);
 		}]],
 		["inlineCode", ["inlineCode", (() => {
 			const codeDecoration = vscode.window.createTextEditorDecorationType({
@@ -281,20 +286,14 @@ function bootstrap(context) {
 				borderRadius: "5px",
 			})
 			return (start, end, node) => {
-				console.log("inlineCode: ", node);
+				// console.log("inlineCode: ", node);
 				// let headingDepth = node.headingDepth + 1;
 				// if (!headingDepth){
 				// 	headingDepth = 0;
 				// }
-				if (node.position.start.line - 1 == editor.selection.active.line) {
-					delDecoration(state, codeDecoration, editor.selection.active.line);
-					delDecoration(state, transparentDecoration, editor.selection.active.line);
-					delDecoration(state, transparentDecoration, editor.selection.active.line);
-				} else {
-					addDecoration(codeDecoration, start, end);
-					addDecoration(transparentDecoration, start, start + 1);
-					addDecoration(transparentDecoration, end - 1, end);
-				}
+				delDecorationIfCurrentLine(node, codeDecoration, start, end);
+				delDecorationIfCurrentLine(node, transparentDecoration, start, start + 1);
+				delDecorationIfCurrentLine(node, transparentDecoration, end - 1, end);
 			};
 		})()]],
 		["mermaid", ["code", (() => {
@@ -324,16 +323,16 @@ function bootstrap(context) {
 					, numLines = 1 + (source.match(/\n/g) || []).length;
 				const decoration = await getMermaidDecoration(source, numLines);
 				if (decoration) {
-					addDecoration(decoration, start, end);
+					delDecorationIfCurrentLine(node, decoration, start, end);
 				}
 			};
 		})()]],
-		["link", ["link", (start, end) => {
+		["link", ["link", (start, end, node) => {
 			const text = state.text.slice(start, end);
 			const match = /\[(.+)\]\(.+?\)/.exec(text);
 			if (!match) return;
-			addDecoration(hideDecoration, start, start + 1);
-			addDecoration(getUrlDecoration(false), start + match[1].length + 1, end);
+			delDecorationIfCurrentLine(node, hideDecoration, start, start + 1);
+			delDecorationIfCurrentLine(node, getUrlDecoration(false), start + match[1].length + 1, end);
 		}]],
 		["html", ["html", (() => {
 			const htmlDecoration = vscode.window.createTextEditorDecorationType({
@@ -346,14 +345,14 @@ function bootstrap(context) {
 					color: "cyan"
 				},
 			});
-			return (start, end) => {
+			return (start, end, node) => {
 				const text = state.text.slice(start, end);
 				const match = /(<.+?>).+(<\/.+?>)/.exec(text);
 				if (match) {
-					addDecoration(htmlDecoration, start, start + match[1].length);
-					addDecoration(htmlDecoration, end - match[2].length, end);
+					delDecorationIfCurrentLine(node, htmlDecoration, start, start + match[1].length);
+					delDecorationIfCurrentLine(node, htmlDecoration, end - match[2].length, end);
 				} else {
-					addDecoration(htmlDecoration, start, end);
+					delDecorationIfCurrentLine(node, htmlDecoration, start, end);
 				}
 			}
 		})()]],
@@ -378,10 +377,10 @@ function bootstrap(context) {
 			const strikeDecoration = vscode.window.createTextEditorDecorationType({
 				textDecoration: "line-through"
 			});
-			return (start, end) => {
-				addDecoration(hideDecoration, start, start + 2);
-				addDecoration(hideDecoration, end - 2, end);
-				addDecoration(strikeDecoration, start + 2, end - 2);
+			return (start, end, node) => {
+				delDecorationIfCurrentLine(node, hideDecoration, start, start + 2);
+				delDecorationIfCurrentLine(node, hideDecoration, end - 2, end);
+				delDecorationIfCurrentLine(node, strikeDecoration, start + 2, end - 2);
 			};
 		})()]],
 		["table", ["table", (() => {
