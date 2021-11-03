@@ -89,6 +89,15 @@ const commentController = undefined;
  */
 const imageList = undefined;
 
+
+/**
+ * @type {Map<import('vscode').TextEditorDecorationType, Map<number, import('vscode').Range>>}
+ */
+const decorationTypeLineDecoration = undefined;
+
+
+const rangeMap = undefined;
+
 const state = {
     activeEditor,
     offset,
@@ -107,7 +116,9 @@ const state = {
     autoImagePreview,
     commentController,
     imageList,
-    changeRangeOffset
+    changeRangeOffset,
+    decorationTypeLineDecoration,
+    rangeMap
 };
 
 module.exports = { state };

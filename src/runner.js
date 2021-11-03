@@ -50,11 +50,29 @@ function posToRange(start, end) {
     const offsetToPos = state.activeEditor.document.positionAt;
     const rangeStart = offsetToPos(start + state.offset);
     const rangeEnd = offsetToPos(end + state.offset);
-    return new vscode.Range(rangeStart, rangeEnd);
+    const rangeSerializer = rangeStart.line+":"+rangeStart.character + "-" + rangeEnd.line + ":" + rangeEnd.character;
+    if (state.rangeMap.hasOwnProperty(rangeSerializer)) {
+        return state.rangeMap[rangeSerializer];
+    }
+    state.rangeMap[rangeSerializer] = new vscode.Range(rangeStart, rangeEnd);
+    return state.rangeMap[rangeSerializer];
 }
 
 function addDecoration(decoration, startOffset, endOffset) {
-    state.decorationRanges.get(decoration).push(posToRange(startOffset, endOffset));
+    let range = posToRange(startOffset, endOffset);
+    let start = posToRange(startOffset, endOffset).start.line;
+
+    state.decorationRanges.get(decoration).push(range);
+    // console.log("add: ", typeof(start), start);
+    if (!state.decorationTypeLineDecoration.hasOwnProperty(decoration)) {
+        state.decorationTypeLineDecoration[decoration] = new Array();
+    }
+    if (!Array.isArray(state.decorationTypeLineDecoration[decoration][start])) {
+        state.decorationTypeLineDecoration[decoration][start] = new Array();
+        // console.log("add ", start, state.decorationTypeLineDecoration[decoration][start])
+    }
+    // console.log("length", state.decorationTypeLineDecoration[decoration].length, "type: ", typeof(state.decorationTypeLineDecoration[decoration][start]), state.decorationTypeLineDecoration[decoration][start], "decoration: ", decoration, state.decorationTypeLineDecoration[decoration]);
+    state.decorationTypeLineDecoration[decoration][start].push(range);
 }
 
 function setDecorations() {

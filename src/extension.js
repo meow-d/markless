@@ -4,6 +4,7 @@ const { state } = require('./state');
 const {  memoize, nodeToHtml, svgToUri, htmlToSvg, DefaultMap, texToSvg, enableHoverImage, path } = require('./util');
 const { triggerUpdateDecorations, addDecoration, posToRange }  = require('./runner');
 const cheerio = require('cheerio');
+const { createImportSpecifier } = require('typescript');
 
 const editor = vscode.window.activeTextEditor;
 
@@ -120,6 +121,8 @@ function bootstrap(context) {
     state.context = context;
 	clearDecorations();
     state.decorationRanges = new DefaultMap(() => []);
+	state.decorationTypeLineDecoration = new DefaultMap();
+	state.rangeMap = new DefaultMap();
     state.config = config;
     state.darkMode = vscode.window.activeColorTheme.kind == vscode.ColorThemeKind.Dark;
     state.fontSize = vscode.workspace.getConfiguration("editor").get("fontSize", 14);
@@ -137,10 +140,19 @@ function bootstrap(context) {
 
 	const delDecorationIfCurrentLine = (node, decoration, start, end) => {
 		// console.log("decoration: ", decoration, "others:", others);
+		// console.log("node: ", node.position.start.line - 1, node);
+		// if (node.position.start.line - 1 > 1000)
+		// {
+		// 	console.log("current line: ", node.position.start.line - 1, "editor.selection.active.line: ", editor.selection.active.line);
 
+		// }
 		if (node.position.start.line - 1 == editor.selection.active.line) {
+			// console.log("enter del")
 			delDecoration(state, decoration, editor.selection.active.line);
-		} else {
+			// 这里是直接清场了把?
+			// clearDecorations();
+		} else { 
+			// console.log("enter add");
 			addDecoration(decoration, start, end);
 		}
 	}
@@ -484,6 +496,7 @@ function activate(context) {
 	}, null, context.subscriptions);
 
 	vscode.window.onDidChangeTextEditorSelection((e) => {
+		console.log("selection changed", e.selections);
 		if (state.activeEditor) {
 			state.selection = e.selections[0];
 			triggerUpdateDecorations();
