@@ -91,11 +91,8 @@ const imageList = undefined;
 
 
 /**
- * @type {Map<import('vscode').TextEditorDecorationType, Map<number, import('vscode').Range>>}
+ * @type {Map<string, import('vscode').Range>}
  */
-const decorationTypeLineDecoration = undefined;
-
-
 const rangeMap = undefined;
 
 const state = {
@@ -117,7 +114,6 @@ const state = {
     commentController,
     imageList,
     changeRangeOffset,
-    decorationTypeLineDecoration,
     rangeMap
 };
 

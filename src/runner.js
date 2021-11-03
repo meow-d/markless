@@ -60,19 +60,7 @@ function posToRange(start, end) {
 
 function addDecoration(decoration, startOffset, endOffset) {
     let range = posToRange(startOffset, endOffset);
-    let start = posToRange(startOffset, endOffset).start.line;
-
     state.decorationRanges.get(decoration).push(range);
-    // console.log("add: ", typeof(start), start);
-    if (!state.decorationTypeLineDecoration.hasOwnProperty(decoration)) {
-        state.decorationTypeLineDecoration[decoration] = new Array();
-    }
-    if (!Array.isArray(state.decorationTypeLineDecoration[decoration][start])) {
-        state.decorationTypeLineDecoration[decoration][start] = new Array();
-        // console.log("add ", start, state.decorationTypeLineDecoration[decoration][start])
-    }
-    // console.log("length", state.decorationTypeLineDecoration[decoration].length, "type: ", typeof(state.decorationTypeLineDecoration[decoration][start]), state.decorationTypeLineDecoration[decoration][start], "decoration: ", decoration, state.decorationTypeLineDecoration[decoration]);
-    state.decorationTypeLineDecoration[decoration][start].push(range);
 }
 
 function updateSelectionToLine() {
@@ -193,7 +181,6 @@ function updateDecorations() {
         for (let range of state.activeEditor.visibleRanges) {
             range = new vscode.Range(Math.max(range.start.line - 200, 0), 0, range.end.line + 200, 0);
             constructDecorations(range);
-            // console.log("Range: ", range.start.line, range.end.line);
         }
     } else {
         constructDecorations();

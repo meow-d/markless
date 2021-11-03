@@ -145,20 +145,27 @@ function bootstrap(context) {
 				textDecoration: `; font-size: ${size}px; position: relative; top: 0.1em;`,
 			}));
 			return (start, end, node) => {
-				// console.log("Heading node", node);
+				// console.log("Heading node", posToRange(start, end).start.line, node);
 				// console.log("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
 				
 				// remark's position.start.line index is from 1 , not from 0, thus, need to minus 1 is the actual line number in vscode.editor.
-				let range = new vscode.Range(editor.document.lineAt(node.position.start.line - 1).range.start, editor.document.lineAt(node.position.start.line - 1).range.end);
+				
+				let posStart = posToRange(start, end);
+				let range = editor.document.lineAt(posStart.start.line).range;
 				let value = editor.document.getText(range);
 				// console.log("range:", range, "content:", value);
 				let endSymbolNeedDecoration = 0;
+
+				// because temporarily use value to calculate whether need to hide, thus here need posToRange to get absolute range. 
 				if (value.startsWith("#")){
 					endSymbolNeedDecoration = start + node.depth + 1;
+					// let temp = posToRange(start, endSymbolNeedDecoration);
+					// console.log("hide: ", value, "line", temp.start.line, temp);
 				} else {
 					endSymbolNeedDecoration = start;
+					// let temp = posToRange(start, endSymbolNeedDecoration);
+					// console.log("dont hide: ", value,temp.start.line, temp );
 				}
-
 				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
 				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
 				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
@@ -477,7 +484,6 @@ function activate(context) {
 	}, null, context.subscriptions);
 
 	vscode.window.onDidChangeTextEditorSelection((e) => {
-		console.log("selection changed", e.selections);
 		if (state.activeEditor) {
 			state.selection = e.selections[0];
 			triggerUpdateDecorations();
