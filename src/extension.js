@@ -1,5 +1,5 @@
 const vscode = require('vscode');
-const { hideDecoration, transparentDecoration, getUrlDecoration, getSvgDecoration, delDecoration } = require('./common-decorations');
+const { hideDecoration, transparentDecoration, getUrlDecoration, getSvgDecoration } = require('./common-decorations');
 const { state } = require('./state');
 const {  memoize, nodeToHtml, svgToUri, htmlToSvg, DefaultMap, texToSvg, enableHoverImage, path } = require('./util');
 const { triggerUpdateDecorations, addDecoration, posToRange }  = require('./runner');
@@ -138,25 +138,6 @@ function bootstrap(context) {
 	// console.log("lineHeight: ", state.lineHeight, "fontSize:", state.fontSize);
     state.autoImagePreview = state.config.get('inlineImage.autoPreview');
 
-	const delDecorationIfCurrentLine = (node, decoration, start, end) => {
-		// console.log("decoration: ", decoration, "others:", others);
-		// console.log("node: ", node.position.start.line - 1, node);
-		// if (node.position.start.line - 1 > 1000)
-		// {
-		// 	console.log("current line: ", node.position.start.line - 1, "editor.selection.active.line: ", editor.selection.active.line);
-
-		// }
-		if (node.position.start.line - 1 == editor.selection.active.line) {
-			// console.log("enter del")
-			delDecoration(state, decoration, editor.selection.active.line);
-			// 这里是直接清场了把?
-			// clearDecorations();
-		} else { 
-			// console.log("enter add");
-			addDecoration(decoration, start, end);
-		}
-	}
-
 	// @ts-ignore
 	state.types = new Map([
 		["heading", ["heading", (() => {
@@ -179,8 +160,8 @@ function bootstrap(context) {
 				}
 
 				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
-				delDecorationIfCurrentLine(node, hideDecoration, start, endSymbolNeedDecoration);
-				delDecorationIfCurrentLine(node, getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
+				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
+				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
 			};
 		})()]],
 		["horizontalRule", ["thematicBreak", (() => {
@@ -208,13 +189,13 @@ function bootstrap(context) {
 				}
 			});
 			return (start, end, node) => {
-				delDecorationIfCurrentLine(node, quoteDecoration, start, end);
+				addDecoration(quoteDecoration, start, end);
 				const text = state.text.slice(start, end);
 				const regEx = /^ {0,3}>/mg;
 				let match;
 				while ((match = regEx.exec(text))) {
 					// console.log("Quote: ", match);
-					delDecorationIfCurrentLine(node, quoteBarDecoration, start + match.index + match[0].length - 1, start + match.index + match[0].length);
+					addDecoration(quoteBarDecoration, start + match.index + match[0].length - 1, start + match.index + match[0].length);
 				}
 			};
 		})()]],
@@ -257,11 +238,11 @@ function bootstrap(context) {
 				const textStart = textPosition.start.offset;
 				const textEnd = textPosition.end.offset;
 				if (!node.isOrdered) {
-					delDecorationIfCurrentLine(node, node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
+					addDecoration(node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
 				}
 				// console.log("wc: node: ", JSON.stringify(node));
 				// console.log("wc: listLevel: ", listLevel);
-				delDecorationIfCurrentLine(node, getlistRainbowDecoration(listLevel), textStart, textEnd);
+				addDecoration(getlistRainbowDecoration(listLevel), textStart, textEnd);
 			};
 		})()]],
 		["latex", ["math", (() => {
@@ -284,12 +265,12 @@ function bootstrap(context) {
 		})()]],
 		["latex", ["inlineMath", (start, end) => state.types.get("math")(start, end)]],
 		["emphasis", ["emphasis", (start, end, node) => {
-			delDecorationIfCurrentLine(node, hideDecoration, start, start + 1);
-			delDecorationIfCurrentLine(node, hideDecoration, end - 1, end);
+			addDecoration(hideDecoration, start, start + 1);
+			addDecoration(hideDecoration, end - 1, end);
 		}]],
 		["emphasis", ["strong", (start, end, node) => {
-			delDecorationIfCurrentLine(node, hideDecoration, start, start + 2);
-			delDecorationIfCurrentLine(node, hideDecoration, end - 2, end);
+			addDecoration(hideDecoration, start, start + 2);
+			addDecoration(hideDecoration, end - 2, end);
 		}]],
 		["inlineCode", ["inlineCode", (() => {
 			const codeDecoration = vscode.window.createTextEditorDecorationType({
@@ -303,9 +284,9 @@ function bootstrap(context) {
 				// if (!headingDepth){
 				// 	headingDepth = 0;
 				// }
-				delDecorationIfCurrentLine(node, codeDecoration, start, end);
-				delDecorationIfCurrentLine(node, transparentDecoration, start, start + 1);
-				delDecorationIfCurrentLine(node, transparentDecoration, end - 1, end);
+				addDecoration(codeDecoration, start, end);
+				addDecoration(transparentDecoration, start, start + 1);
+				addDecoration(transparentDecoration, end - 1, end);
 			};
 		})()]],
 		["mermaid", ["code", (() => {
@@ -335,7 +316,7 @@ function bootstrap(context) {
 					, numLines = 1 + (source.match(/\n/g) || []).length;
 				const decoration = await getMermaidDecoration(source, numLines);
 				if (decoration) {
-					delDecorationIfCurrentLine(node, decoration, start, end);
+					addDecoration(decoration, start, end);
 				}
 			};
 		})()]],
@@ -343,8 +324,8 @@ function bootstrap(context) {
 			const text = state.text.slice(start, end);
 			const match = /\[(.+)\]\(.+?\)/.exec(text);
 			if (!match) return;
-			delDecorationIfCurrentLine(node, hideDecoration, start, start + 1);
-			delDecorationIfCurrentLine(node, getUrlDecoration(false), start + match[1].length + 1, end);
+			addDecoration(hideDecoration, start, start + 1);
+			addDecoration(getUrlDecoration(false), start + match[1].length + 1, end);
 		}]],
 		["html", ["html", (() => {
 			const htmlDecoration = vscode.window.createTextEditorDecorationType({
@@ -361,10 +342,10 @@ function bootstrap(context) {
 				const text = state.text.slice(start, end);
 				const match = /(<.+?>).+(<\/.+?>)/.exec(text);
 				if (match) {
-					delDecorationIfCurrentLine(node, htmlDecoration, start, start + match[1].length);
-					delDecorationIfCurrentLine(node, htmlDecoration, end - match[2].length, end);
+					addDecoration(htmlDecoration, start, start + match[1].length);
+					addDecoration(htmlDecoration, end - match[2].length, end);
 				} else {
-					delDecorationIfCurrentLine(node, htmlDecoration, start, end);
+					addDecoration(htmlDecoration, start, end);
 				}
 			}
 		})()]],
@@ -390,9 +371,9 @@ function bootstrap(context) {
 				textDecoration: "line-through"
 			});
 			return (start, end, node) => {
-				delDecorationIfCurrentLine(node, hideDecoration, start, start + 2);
-				delDecorationIfCurrentLine(node, hideDecoration, end - 2, end);
-				delDecorationIfCurrentLine(node, strikeDecoration, start + 2, end - 2);
+				addDecoration(hideDecoration, start, start + 2);
+				addDecoration(hideDecoration, end - 2, end);
+				addDecoration(strikeDecoration, start + 2, end - 2);
 			};
 		})()]],
 		["table", ["table", (() => {

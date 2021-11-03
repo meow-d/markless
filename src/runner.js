@@ -75,9 +75,21 @@ function addDecoration(decoration, startOffset, endOffset) {
     state.decorationTypeLineDecoration[decoration][start].push(range);
 }
 
+function updateSelectionToLine() {
+    let line_start = vscode.window.activeTextEditor.document.lineAt(state.selection.start);
+    let line_end = vscode.window.activeTextEditor.document.lineAt(state.selection.end);
+    let start = line_start.range.start;
+    let end = line_end.range.end;
+    state.selection = new vscode.Selection(start, end);
+}
+
 function setDecorations() {
     for (let [decoration, ranges] of state.decorationRanges) {
         // console.log("decoration RANGES", [decoration, ranges]);
+        if (state.config.cursorLineDisables) {
+            updateSelectionToLine();
+        }
+
         if (state.config.cursorDisables) {
             ranges = ranges.filter((r) => !state.selection.intersection(r));
         }
