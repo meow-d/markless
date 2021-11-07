@@ -1,6 +1,7 @@
 const { state } = require('./state');
 const { parser, urlToUri, DefaultMap } = require('./util');
 const vscode = require('vscode')
+const log = require('loglevel')
 
 const addInlineImages = (() => {
     class ImageComment {
@@ -64,8 +65,10 @@ function addDecoration(decoration, startOffset, endOffset) {
 }
 
 function updateSelectionToLine() {
-    let line_start = vscode.window.activeTextEditor.document.lineAt(state.selection.start);
-    let line_end = vscode.window.activeTextEditor.document.lineAt(state.selection.end);
+    log.debug("update SelectionToLine", state.selection, state.selection.start.line);
+    let line_start = state.activeEditor.document.lineAt(state.selection.start);
+    let line_end = state.activeEditor.document.lineAt(state.selection.end);
+    log.debug("line_start: ", line_start, "line_end: ", line_end);
     let start = line_start.range.start;
     let end = line_end.range.end;
     state.selection = new vscode.Selection(start, end);
@@ -172,6 +175,16 @@ function constructDecorations(range) {
     visitNodes(node).then(setDecorations);
 }
 
+function updateLogLevel() {
+    log.debug("set log level to debug: ", state.config.debug);
+    if (state.config.debug) {
+		log.setLevel("debug");
+        log.debug("set log level to debug.")
+	} else {
+		log.setLevel("silent");
+	}
+}
+
 function updateDecorations() {
     // console.log("updateDecorations");
     for (let decoration of state.decorationRanges.keys()) {
@@ -199,4 +212,4 @@ function triggerUpdateDecorations() {
     timeout = setTimeout(updateDecorations, 10);
 }
 
-module.exports = { triggerUpdateDecorations, addDecoration, posToRange }
+module.exports = { triggerUpdateDecorations, addDecoration, posToRange, updateLogLevel }

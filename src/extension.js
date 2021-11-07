@@ -2,11 +2,10 @@ const vscode = require('vscode');
 const { hideDecoration, transparentDecoration, getUrlDecoration, getSvgDecoration } = require('./common-decorations');
 const { state } = require('./state');
 const {  memoize, nodeToHtml, svgToUri, htmlToSvg, DefaultMap, texToSvg, enableHoverImage, path } = require('./util');
-const { triggerUpdateDecorations, addDecoration, posToRange }  = require('./runner');
+const { triggerUpdateDecorations, addDecoration, posToRange, updateLogLevel }  = require('./runner');
 const cheerio = require('cheerio');
 const { createImportSpecifier } = require('typescript');
-
-const editor = vscode.window.activeTextEditor;
+const log = require('loglevel');
 
 let config = vscode.workspace.getConfiguration("markless");
 
@@ -121,14 +120,15 @@ function bootstrap(context) {
     state.context = context;
 	clearDecorations();
     state.decorationRanges = new DefaultMap(() => []);
-	state.decorationTypeLineDecoration = new DefaultMap();
 	state.rangeMap = new DefaultMap();
     state.config = config;
     state.darkMode = vscode.window.activeColorTheme.kind == vscode.ColorThemeKind.Dark;
     state.fontSize = vscode.workspace.getConfiguration("editor").get("fontSize", 14);
     state.fontFamily = vscode.workspace.getConfiguration("editor").get("fontFamily", "Courier New");
-
     const lineHeight = vscode.workspace.getConfiguration("editor").get("lineHeight", 0);
+
+	updateLogLevel();
+
     // https://github.com/microsoft/vscode/blob/45aafeb326d0d3d56cbc9e2932f87e368dbf652d/src/vs/editor/common/config/fontInfo.ts#L54
     if (lineHeight === 0) {
         state.lineHeight = Math.round(process.platform == "darwin" ? 1.5 * state.fontSize : 1.35 * state.fontSize);
@@ -145,28 +145,30 @@ function bootstrap(context) {
 				textDecoration: `; font-size: ${size}px; position: relative; top: 0.1em;`,
 			}));
 			return (start, end, node) => {
+				log.debug("Heading", node);
 				// console.log("Heading node", posToRange(start, end).start.line, node);
-				// console.log("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
+				// log.debug("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
 				
 				// remark's position.start.line index is from 1 , not from 0, thus, need to minus 1 is the actual line number in vscode.editor.
 				
 				let posStart = posToRange(start, end);
-				let range = editor.document.lineAt(posStart.start.line).range;
-				let value = editor.document.getText(range);
-				// console.log("range:", range, "content:", value);
+				log.debug("posStart: ", posStart, posStart.start, posStart.start.line, typeof(posStart.start.line));
+				let range = state.activeEditor.document.lineAt(posStart.start).range;
+				let value = state.activeEditor.document.getText(range);
+				log.debug("range:", range, "content:", value);
 				let endSymbolNeedDecoration = 0;
 
 				// because temporarily use value to calculate whether need to hide, thus here need posToRange to get absolute range. 
 				if (value.startsWith("#")){
 					endSymbolNeedDecoration = start + node.depth + 1;
 					// let temp = posToRange(start, endSymbolNeedDecoration);
-					// console.log("hide: ", value, "line", temp.start.line, temp);
+					// log.debug("hide: ", value, "line", temp.start.line, temp, temp.start, start, endSymbolNeedDecoration);
 				} else {
 					endSymbolNeedDecoration = start;
 					// let temp = posToRange(start, endSymbolNeedDecoration);
-					// console.log("dont hide: ", value,temp.start.line, temp );
+					// log.debug("dont hide: ", value, temp.start.line, temp, temp.start, start, endSymbolNeedDecoration);
 				}
-				// console.log("offset: ",  state.offset, "start: ", start , " end: ", end);
+				// console.log("value", value, "offset: ",  state.offset, "start: ", start , " end: ", end);
 				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
 				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
 			};
@@ -479,6 +481,7 @@ function activate(context) {
 
 	vscode.workspace.onDidChangeConfiguration(e => {
 		if (['markless', 'workbench.colorTheme', 'editor.fontSize'].some(c=>e.affectsConfiguration(c))) {
+			state.config = vscode.workspace.getConfiguration("markless");
 			bootstrap();
 		}
 	}, null, context.subscriptions);
