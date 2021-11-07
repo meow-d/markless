@@ -241,13 +241,20 @@ function bootstrap(context) {
 				};
 			})();
 			return (start, _end, node, listLevel) => {
-				// console.log("decorate list", listLevel);
+				log.debug("decorate list", posToRange(start, _end).start.line, node, listLevel);
 				if (node.children.length === 0) return;
 				const textPosition = node.children[0].position;
 				const textStart = textPosition.start.offset;
 				const textEnd = textPosition.end.offset;
 				if (!node.isOrdered) {
-					addDecoration(node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
+					// addDecoration(node.checked == null ? getBulletDecoration(listLevel) : getCheckedDecoration(node.checked), start, textStart - 1);
+					if (node.checked == null) {
+						log.debug("getBulletDecoration: ", posToRange(start, _end).start.line, node, getBulletDecoration(listLevel));
+						addDecoration(getBulletDecoration(listLevel), start, textStart - 1);
+					} else {
+						log.debug("getCheckedDecoration: ", posToRange(start, _end).start.line, node, getCheckedDecoration(node.checked));
+						addDecoration(getCheckedDecoration(node.checked), start, textStart - 1);
+					}
 				}
 				// console.log("wc: node: ", JSON.stringify(node));
 				// console.log("wc: listLevel: ", listLevel);
@@ -482,7 +489,10 @@ function activate(context) {
 	vscode.workspace.onDidChangeConfiguration(e => {
 		if (['markless', 'workbench.colorTheme', 'editor.fontSize'].some(c=>e.affectsConfiguration(c))) {
 			state.config = vscode.workspace.getConfiguration("markless");
-			bootstrap();
+			updateLogLevel();
+			if (state.activeEditor) {
+				bootstrap();
+			}
 		}
 	}, null, context.subscriptions);
 
