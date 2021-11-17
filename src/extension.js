@@ -144,6 +144,17 @@ function bootstrap(context) {
 			const getEnlargeDecoration = memoize((size) => vscode.window.createTextEditorDecorationType({
 				textDecoration: `; font-size: ${size}px; position: relative; top: 0.1em;`,
 			}));
+			const getlistRainbowDecoration = (() => {
+				const hueRotationMultiplier = [0, 5, 9, 2, 6, 7];
+				const getNonCyclicDecoration = memoize((level) => vscode.window.createTextEditorDecorationType({
+					textDecoration: (`; filter: hue-rotate(${hueRotationMultiplier[level] * 360 / 12}deg);`),
+				}));
+				return (level) => {
+					level = level % hueRotationMultiplier.length;
+					return getNonCyclicDecoration(level);
+				};
+			})();
+
 			return (start, end, node) => {
 				log.debug("Heading", node);
 				// console.log("Heading node", posToRange(start, end).start.line, node);
@@ -171,6 +182,7 @@ function bootstrap(context) {
 				// console.log("value", value, "offset: ",  state.offset, "start: ", start , " end: ", end);
 				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
 				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
+				addDecoration(getlistRainbowDecoration(node.depth), endSymbolNeedDecoration, end);
 			};
 		})()]],
 		["horizontalRule", ["thematicBreak", (() => {
