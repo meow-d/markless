@@ -1,4 +1,6 @@
 const vscode = require('vscode');
+const log = require('loglevel');
+const { state } = require('./state');
 
 function enableHoverImage(context) {
     context.subscriptions.push(vscode.languages.registerHoverProvider('markdown', {
@@ -111,6 +113,7 @@ function urlToUri(url) {
 
 
 function svgToUri(svg) {
+    log.debug("svg:", svg);
     return `data:image/svg+xml;base64,${Buffer.from(svg).toString('base64')}`;
 }
 
@@ -135,7 +138,7 @@ const nodeToHtml = (() => {
     // else https://stackoverflow.com/a/63719868/8211365
     const toHast = require('mdast-util-to-hast');
     const toHtml = require('hast-util-to-html');
-    return (/** @type {import("unist").Node} */ node) => toHtml(toHast(node));
+    return (/** @type {import("unist").Node} */ node) => toHtml(toHast(node, {allowDangerousHtml: state.config.allowDangerousHtml}), {allowDangerousHtml: state.config.allowDangerousHtml});
 })();
 
 const path = require('path');

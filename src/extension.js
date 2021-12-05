@@ -6,6 +6,7 @@ const { triggerUpdateDecorations, addDecoration, posToRange, updateLogLevel }  =
 const cheerio = require('cheerio');
 const { createImportSpecifier } = require('typescript');
 const log = require('loglevel');
+const { getLogger } = require('loglevel');
 
 let config = vscode.workspace.getConfiguration("markless");
 
@@ -420,11 +421,12 @@ function bootstrap(context) {
 				`;
 				const temp = html.match(/<tr>[^]+?<\/tr>/g)
 					.map(r => r.replace(/^<tr>\n<t[dh]>/, '').split(/<t[dh]>/)
-						.map(c => c.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "")))
+						.map(c => c.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "")))		
 				const maxLength = temp.reduce((acc, cur) => acc.map((val, idx) => Math.max(val, cur[idx].length)), Array(temp[0].length).fill(0))
 					.reduce((acc, cur)=>acc+cur);
-
+				log.debug("maxLength: ", maxLength);
 				const tableUri = svgToUri(htmlToSvg(numRows * lineHeight, maxLength * fontSize, html, css));
+				log.debug("table uri: ", tableUri);
 				return vscode.window.createTextEditorDecorationType({
 					color: "transparent",
 					textDecoration: "none; display: inline-block; width: 0;",
@@ -436,6 +438,7 @@ function bootstrap(context) {
 			});
 			return (start, end, node) => {
 				const html = nodeToHtml(node);
+				log.error(html);
 				addDecoration(getTableDecoration(html, state.darkMode, state.fontFamily, state.fontSize, state.lineHeight), start, end);
 			};
 		})()]]

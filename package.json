@@ -178,6 +178,11 @@
 						"description": "set log level to debug, verbose",
 						"type": "boolean",
 						"default": false
+					},
+					"markless.allowDangerousHtml": {
+						"description": "render raw html",
+						"type": "boolean",
+						"default": false
 					}
 				}
 			}
