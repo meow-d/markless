@@ -183,6 +183,11 @@
 						"description": "render raw html",
 						"type": "boolean",
 						"default": false
+					},
+					"markless.customBullets": {
+						"description": "custom list bullets",
+						"type": "string",
+						"default": "❧☯♠❀♚☬♣♥🙤⚜⚛⛇⚓☘☔"
 					}
 				}
 			}
