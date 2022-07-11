@@ -9,6 +9,7 @@ const log = require('loglevel');
 const { getLogger } = require('loglevel');
 
 let config = vscode.workspace.getConfiguration("markless");
+const LIST_BULLETS = ["•", "○", "■"];
 
 function enableLineRevealAsSignature(context) {
     context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('markdown', {
@@ -222,21 +223,16 @@ function bootstrap(context) {
 			};
 		})()]],
 		["list", ["listItem", (() => {
-			const getBulletDecoration = (level) => {
-				let listBullets = state.config.customBullets;
-				if (!listBullets || listBullets.length === 0) {
-					// or like "•○■"
-					listBullets = "❧☯♠❀♚☬♣♥🙤⚜⚛⛇⚓☘☔";
-				}
+			const getBulletDecoration = memoize((level) => {
 				return vscode.window.createTextEditorDecorationType({
 					color: "transparent",
 					textDecoration: "none; display: inline-block; width: 0;",
 					after: {
-						contentText: listBullets[level % listBullets.length],
+						contentText: LIST_BULLETS[level % LIST_BULLETS.length],
 						fontWeight: "bold"
 					},
 				});
-			};
+			});
 			const getCheckedDecoration = memoize((checked) => {
 				return vscode.window.createTextEditorDecorationType({
 					color: "transparent",

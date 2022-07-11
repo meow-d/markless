@@ -95,13 +95,6 @@ Preview markdown inline and extend the capabilities through existing VS Code ext
 
 ![](assets/list.jpg)
 
-## customBullets
-
-The default list item bullets are ❧☯♠❀♚☬♣♥🙤⚜⚛⛇⚓☘☔
-
-You could also use bullets like •○■
-
-
 # **Task list**
 
 ![](assets/task-list.jpg)
