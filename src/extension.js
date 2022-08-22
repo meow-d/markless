@@ -1,8 +1,8 @@
 const vscode = require('vscode');
 const { hideDecoration, transparentDecoration, getUrlDecoration, getSvgDecoration } = require('./common-decorations');
 const { state } = require('./state');
-const {  memoize, nodeToHtml, svgToUri, htmlToSvg, DefaultMap, texToSvg, enableHoverImage, path } = require('./util');
-const { triggerUpdateDecorations, addDecoration, posToRange, updateLogLevel }  = require('./runner');
+const { memoize, nodeToHtml, svgToUri, htmlToSvg, DefaultMap, texToSvg, enableHoverImage, path } = require('./util');
+const { triggerUpdateDecorations, addDecoration, posToRange, updateLogLevel } = require('./runner');
 const cheerio = require('cheerio');
 const { createImportSpecifier } = require('typescript');
 const log = require('loglevel');
@@ -12,47 +12,47 @@ let config = vscode.workspace.getConfiguration("markless");
 const LIST_BULLETS = ["•", "○", "■"];
 
 function enableLineRevealAsSignature(context) {
-    context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('markdown', {
-        provideSignatureHelp: (document, position) => {
-            if (!state.activeEditor) return;
-            // console.log('Signature Help');
-            const cursorPosition = state.activeEditor.selection.active;
+	context.subscriptions.push(vscode.languages.registerSignatureHelpProvider('markdown', {
+		provideSignatureHelp: (document, position) => {
+			if (!state.activeEditor) return;
+			// console.log('Signature Help');
+			const cursorPosition = state.activeEditor.selection.active;
 
-            let latexElement = undefined;
-            let start = state.activeEditor.document.offsetAt(cursorPosition)+2;
-            let end = start-3;
-            while (--start > 0) {
-                if (state.text[start-1] === '$' && state.text[start] !== ' ') {
-                    while (++end < state.text.length) {
-                        if (state.text[end] === '$' && state.text[end-1] !== ' ') {
-                            if (start < end)
-                                latexElement = `![latexPreview](${svgToUri(texToSvg(state.text.slice(start, end)))})`;
-                            break;
-                        }
-                    }
-                    break;
-                }
-            }
+			let latexElement = undefined;
+			let start = state.activeEditor.document.offsetAt(cursorPosition) + 2;
+			let end = start - 3;
+			while (--start > 0) {
+				if (state.text[start - 1] === '$' && state.text[start] !== ' ') {
+					while (++end < state.text.length) {
+						if (state.text[end] === '$' && state.text[end - 1] !== ' ') {
+							if (start < end)
+								latexElement = `![latexPreview](${svgToUri(texToSvg(state.text.slice(start, end)))})`;
+							break;
+						}
+					}
+					break;
+				}
+			}
 
-            const text = document.lineAt(cursorPosition).text
-                .replace(new RegExp(`(?<=^.{${position.character}})`), "█");
-            const ms = new vscode.MarkdownString(latexElement);
-            ms.isTrusted = true;
-            if (!latexElement) {
-                ms.appendCodeblock(text, "markdown");
-            }
-            // console.log("signature", ms);
-            return {
-                activeParameter: 0,
-                activeSignature: 0,
-                signatures: [new vscode.SignatureInformation("", ms)],
-            };
-        }
-    }, '\\'));
+			const text = document.lineAt(cursorPosition).text
+				.replace(new RegExp(`(?<=^.{${position.character}})`), "█");
+			const ms = new vscode.MarkdownString(latexElement);
+			ms.isTrusted = true;
+			if (!latexElement) {
+				ms.appendCodeblock(text, "markdown");
+			}
+			// console.log("signature", ms);
+			return {
+				activeParameter: 0,
+				activeSignature: 0,
+				signatures: [new vscode.SignatureInformation("", ms)],
+			};
+		}
+	}, '\\'));
 }
 
 let requestSvg, webviewLoaded;
-function registerWebviewViewProvider (context) {
+function registerWebviewViewProvider(context) {
 	let resolveWebviewLoaded, resolveSvg;
 	webviewLoaded = new Promise(resolve => { resolveWebviewLoaded = resolve; });
 	context.subscriptions.push(vscode.window.registerWebviewViewProvider("test.webview", {
@@ -118,27 +118,27 @@ function toggle() {
 }
 
 function bootstrap(context) {
-    state.enabled = true;
-    state.context = context;
+	state.enabled = true;
+	state.context = context;
 	clearDecorations();
-    state.decorationRanges = new DefaultMap(() => []);
+	state.decorationRanges = new DefaultMap(() => []);
 	state.rangeMap = new DefaultMap();
-    state.config = config;
-    state.darkMode = vscode.window.activeColorTheme.kind == vscode.ColorThemeKind.Dark;
-    state.fontSize = vscode.workspace.getConfiguration("editor").get("fontSize", 14);
-    state.fontFamily = vscode.workspace.getConfiguration("editor").get("fontFamily", "Courier New");
-    const lineHeight = vscode.workspace.getConfiguration("editor").get("lineHeight", 0);
+	state.config = config;
+	state.darkMode = vscode.window.activeColorTheme.kind == vscode.ColorThemeKind.Dark;
+	state.fontSize = vscode.workspace.getConfiguration("editor").get("fontSize", 14);
+	state.fontFamily = vscode.workspace.getConfiguration("editor").get("fontFamily", "Courier New");
+	const lineHeight = vscode.workspace.getConfiguration("editor").get("lineHeight", 0);
 
 	updateLogLevel();
 
-    // https://github.com/microsoft/vscode/blob/45aafeb326d0d3d56cbc9e2932f87e368dbf652d/src/vs/editor/common/config/fontInfo.ts#L54
-    if (lineHeight === 0) {
-        state.lineHeight = Math.round(process.platform == "darwin" ? 1.5 * state.fontSize : 1.35 * state.fontSize);
-    } else if (lineHeight < 8) {
-        state.lineHeight = 8;
-    }
+	// https://github.com/microsoft/vscode/blob/45aafeb326d0d3d56cbc9e2932f87e368dbf652d/src/vs/editor/common/config/fontInfo.ts#L54
+	if (lineHeight === 0) {
+		state.lineHeight = Math.round(process.platform == "darwin" ? 1.5 * state.fontSize : 1.35 * state.fontSize);
+	} else if (lineHeight < 8) {
+		state.lineHeight = 8;
+	}
 	// console.log("lineHeight: ", state.lineHeight, "fontSize:", state.fontSize);
-    state.autoImagePreview = state.config.get('inlineImage.autoPreview');
+	state.autoImagePreview = state.config.get('inlineImage.autoPreview');
 
 	// @ts-ignore
 	state.types = new Map([
@@ -161,18 +161,18 @@ function bootstrap(context) {
 				log.debug("Heading", node);
 				// console.log("Heading node", posToRange(start, end).start.line, node);
 				// log.debug("node.depth:", node.depth, "state.fontSize: ", state.fontSize, "size: ", state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth));
-				
+
 				// remark's position.start.line index is from 1 , not from 0, thus, need to minus 1 is the actual line number in vscode.editor.
-				
+
 				let posStart = posToRange(start, end);
-				log.debug("posStart: ", posStart, posStart.start, posStart.start.line, typeof(posStart.start.line));
+				log.debug("posStart: ", posStart, posStart.start, posStart.start.line, typeof (posStart.start.line));
 				let range = state.activeEditor.document.lineAt(posStart.start).range;
 				let value = state.activeEditor.document.getText(range);
 				log.debug("range:", range, "content:", value);
 				let endSymbolNeedDecoration = 0;
 
-				// because temporarily use value to calculate whether need to hide, thus here need posToRange to get absolute range. 
-				if (value.startsWith("#")){
+				// because temporarily use value to calculate whether need to hide, thus here need posToRange to get absolute range.
+				if (value.startsWith("#")) {
 					endSymbolNeedDecoration = start + node.depth + 1;
 					// let temp = posToRange(start, endSymbolNeedDecoration);
 					// log.debug("hide: ", value, "line", temp.start.line, temp, temp.start, start, endSymbolNeedDecoration);
@@ -183,7 +183,7 @@ function bootstrap(context) {
 				}
 				// console.log("value", value, "offset: ",  state.offset, "start: ", start , " end: ", end);
 				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
-				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
+				addDecoration(getEnlargeDecoration(5 * state.fontSize / (2 + node.depth)), start + node.depth + 1, end);
 				addDecoration(getlistRainbowDecoration(node.depth), endSymbolNeedDecoration, end);
 			};
 		})()]],
@@ -288,7 +288,7 @@ function bootstrap(context) {
 				const match = /^(\$+)([^]+)\1/.exec(latexText);
 				if (!match) return;
 				// console.log("math", latexText);
-				const numLines = 1 + (latexText.match(/\n/g)||[]).length;
+				const numLines = 1 + (latexText.match(/\n/g) || []).length;
 				addDecoration(getTexDecoration(match[2], match[1].length > 1, numLines), start, end);
 			};
 		})()]],
@@ -412,18 +412,18 @@ function bootstrap(context) {
 				table { border-collapse: collapse; }
 				th { border-bottom : groove; }
 				td { border-bottom : inset; }
-				td, th {padding:${fontSize*0.1}px 0.5em;}
-				/*td,th { height: ${lineHeight*0.9}px;}*/
+				td, th {padding:${fontSize * 0.1}px 0.5em;}
+				/*td,th { height: ${lineHeight * 0.9}px;}*/
 				body {
 					font-family:${fontFamily.replace(/(?<!\\)"/g, "'")};
-					font-size: ${fontSize*0.9}px;
+					font-size: ${fontSize * 0.9}px;
 				}
 				`;
 				const temp = html.match(/<tr>[^]+?<\/tr>/g)
 					.map(r => r.replace(/^<tr>\n<t[dh]>/, '').split(/<t[dh]>/)
-						.map(c => c.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "")))		
+						.map(c => c.replace(/<\/?("[^"]*"|'[^']*'|[^>])*(>|$)/g, "")))
 				const maxLength = temp.reduce((acc, cur) => acc.map((val, idx) => Math.max(val, cur[idx].length)), Array(temp[0].length).fill(0))
-					.reduce((acc, cur)=>acc+cur);
+					.reduce((acc, cur) => acc + cur);
 				log.debug("maxLength: ", maxLength);
 				const tableUri = svgToUri(htmlToSvg(numRows * lineHeight, maxLength * fontSize, html, css));
 				log.debug("table uri: ", tableUri);
@@ -442,17 +442,17 @@ function bootstrap(context) {
 				addDecoration(getTableDecoration(html, state.darkMode, state.fontFamily, state.fontSize, state.lineHeight), start, end);
 			};
 		})()]]
-	// @ts-ignore
-	].filter(e=>state.config.get(e[0])).map(e => e[1]));
+		// @ts-ignore
+	].filter(e => state.config.get(e[0])).map(e => e[1]));
 
 	state.activeEditor = vscode.window.activeTextEditor;
 	if (state.activeEditor) {
-        if (state.activeEditor.document.languageId == "markdown") {
+		if (state.activeEditor.document.languageId == "markdown") {
 			state.selection = state.activeEditor.selection;
 			triggerUpdateDecorations();
-        } else {
-            state.activeEditor = undefined;
-        }
+		} else {
+			state.activeEditor = undefined;
+		}
 	}
 }
 
@@ -467,10 +467,10 @@ function activate(context) {
 		enableHoverImage(context);
 	}
 	enableLineRevealAsSignature(context);
-    context.subscriptions.push(vscode.commands.registerCommand("markless.toggle", toggle));
+	context.subscriptions.push(vscode.commands.registerCommand("markless.toggle", toggle));
 	state.imageList = [];
-    state.commentController = vscode.comments.createCommentController("inlineImage", "Show images inline");
-    context.subscriptions.push(state.commentController);
+	state.commentController = vscode.comments.createCommentController("inlineImage", "Show images inline");
+	context.subscriptions.push(state.commentController);
 	bootstrap(context);
 
 	vscode.window.onDidChangeTextEditorVisibleRanges(event => {
@@ -502,7 +502,7 @@ function activate(context) {
 	}, null, context.subscriptions);
 
 	vscode.workspace.onDidChangeConfiguration(e => {
-		if (['markless', 'workbench.colorTheme', 'editor.fontSize'].some(c=>e.affectsConfiguration(c))) {
+		if (['markless', 'workbench.colorTheme', 'editor.fontSize'].some(c => e.affectsConfiguration(c))) {
 			state.config = vscode.workspace.getConfiguration("markless");
 			updateLogLevel();
 			if (state.activeEditor) {
