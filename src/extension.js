@@ -193,7 +193,7 @@ function bootstrap(context) {
 				textDecoration: "none; display: inline-block; width: 0;",
 				before: {
 					contentText: "",
-					textDecoration: "none; position: absolute; background: #ffaa00; top: 0.49em; bottom: 0.49em; width: 100%; mix-blend-mode: luminosity; border: outset;",
+					textDecoration: "none; position: absolute; background: #ffaa00; height: 0.15em; width: 100%; mix-blend-mode: luminosity;",
 				}
 			});
 			return (start, end, node) => {
