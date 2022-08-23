@@ -183,7 +183,7 @@ function bootstrap(context) {
 				}
 				// console.log("value", value, "offset: ",  state.offset, "start: ", start , " end: ", end);
 				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
-				addDecoration(getEnlargeDecoration(state.fontSize + Math.ceil(state.fontSize) / 6 * (7 - node.depth)), endSymbolNeedDecoration, end);
+				addDecoration(getEnlargeDecoration(5 * state.fontSize / (2 + node.depth)), start + node.depth + 1, end);
 				addDecoration(getlistRainbowDecoration(node.depth), endSymbolNeedDecoration, end);
 			};
 		})()]],
