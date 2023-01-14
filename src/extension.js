@@ -166,14 +166,14 @@ function bootstrap(context) {
 					endSymbolNeedDecoration = start + node.depth + 1;
 					// let temp = posToRange(start, endSymbolNeedDecoration);
 					// log.debug("hide: ", value, "line", temp.start.line, temp, temp.start, start, endSymbolNeedDecoration);
+					addDecoration(hideDecoration, start, endSymbolNeedDecoration);
+					addDecoration(getEnlargeDecoration(5 * state.fontSize / (2 + node.depth)), endSymbolNeedDecoration, end);
 				} else {
 					endSymbolNeedDecoration = start;
 					// let temp = posToRange(start, endSymbolNeedDecoration);
 					// log.debug("dont hide: ", value, temp.start.line, temp, temp.start, start, endSymbolNeedDecoration);
 				}
 				// console.log("value", value, "offset: ",  state.offset, "start: ", start , " end: ", end);
-				addDecoration(hideDecoration, start, endSymbolNeedDecoration);
-				addDecoration(getEnlargeDecoration(5 * state.fontSize / (2 + node.depth)), endSymbolNeedDecoration, end);
 			};
 		})()]],
 		["horizontalRule", ["thematicBreak", (() => {
