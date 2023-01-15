@@ -147,6 +147,15 @@ function bootstrap(context) {
 				textDecoration: `; font-size: ${size}px; position: relative; top: 0.1em;`,
 			}));
 
+			// a horizontal rule that covers the last line. a hacky and inelegant workaround
+			const horizontalRuleDecoration = vscode.window.createTextEditorDecorationType({
+				textDecoration: `position: relative;`,
+				after: {
+					contentText: "",
+					textDecoration: "none; position: absolute; transform: translate(-3em, 0); background: var(--vscode-editor-background); height: 1.5em; width: 100%; box-shadow: inset 0 -0.15em 0 #b1b1b1;",
+				}
+			});
+
 			return (start, end, node) => {
 				log.debug("Heading", node);
 				// console.log("Heading node", posToRange(start, end).start.line, node);
@@ -170,6 +179,7 @@ function bootstrap(context) {
 					addDecoration(getEnlargeDecoration(5 * state.fontSize / (2 + node.depth)), endSymbolNeedDecoration, end);
 				} else {
 					endSymbolNeedDecoration = start;
+					addDecoration(horizontalRuleDecoration, start, end);
 					// let temp = posToRange(start, endSymbolNeedDecoration);
 					// log.debug("dont hide: ", value, temp.start.line, temp, temp.start, start, endSymbolNeedDecoration);
 				}
