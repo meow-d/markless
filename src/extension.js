@@ -391,7 +391,17 @@ function bootstrap(context) {
 			}
 			const editor = vscode.window.activeTextEditor;
 			const mdFilePath = editor.document.uri.fsPath;
-			const imgPath = path.resolve("file://", path.dirname(mdFilePath), node.url);
+			let imgPath;
+			if (process.platform === 'win32') {
+				// Windows 系统下处理
+				const absolutePath = path.resolve(path.dirname(mdFilePath), node.url);
+				// 确保路径以驱动器盘符开头，并转换为正确的 file:// URI 格式
+				imgPath = `file:///${absolutePath.replace(/\\/g, '/')}`;
+			} else {
+				// Unix-like 系统 (Linux/macOS)
+				const absolutePath = path.resolve(path.dirname(mdFilePath), node.url);
+				imgPath = `file://${absolutePath}`;
+			}
 			state.imageList.push([posToRange(start, end), imgPath, node.alt || " "]);
 		}]],
 		["emphasis", ["delete", (() => {
