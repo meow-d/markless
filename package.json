@@ -1,9 +1,9 @@
 {
-	"name": "markless-sean10",
-	"publisher": "sean10",
-	"displayName": "Markless_sean10",
-	"description": "Inline markdown preview.  Vim mode and WYSIWYG mermaid, latex and image rendering. Support something custom which modified by sean10.",
-	"version": "1.0.27",
+	"name": "markless-meowd",
+	"publisher": "meow-d",
+	"displayName": "Markless_meow-d",
+	"description": "Inline WYSIWYG markdown preview. supports mermaid, latex and, image rendering; and works with Vim mode. Meow_d's personal fork of sean10's fork.",
+	"version": "1.0.28",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
@@ -28,12 +28,12 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/sean10/markless"
+		"url": "https://github.com/meow-d/markless"
+	},
+	"bugs": {
+		"url": "https://github.com/meow-d/markless"
 	},
 	"icon": "assets/icon.png",
-	"bugs": {
-		"url": "https://github.com/sean10/markless"
-	},
 	"activationEvents": [
 		"onLanguage:markdown"
 	],
