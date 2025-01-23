@@ -6,6 +6,7 @@ Preview markdown inline and extend the capabilities through existing VS Code ext
 <details>
 <summary>Table of contents</summary>
 
+- [**Differences with upstream**](#differences-with-upstream)
 - Features
     - [**Headers**](#headers)
     - [**URLs**](#urls)
@@ -33,6 +34,16 @@ Preview markdown inline and extend the capabilities through existing VS Code ext
 - [**Typora equivalents**](#typora-equivalents)
 - [**Differences**](#differences)
 </details>
+
+## Differences with upstream
+### Differences between sean10's fork and upstream
+- YAML/TOML frontmatter support
+- Bullet points uses common bullet point symbols instead of those super stylistic symbols
+- Headings are based on colors, not size
+- Various bug fixes
+
+### Differences between this and sean10's fork
+- Reverted colorful headings, now they're based on size again
 
 <div id="features"> </div>
 
