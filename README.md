@@ -45,77 +45,77 @@ Preview markdown inline and extend the capabilities through existing VS Code ext
 ### Differences between this and sean10's fork
 - Reverted colorful headings, now they're based on size again
 
-<div id="features"> </div>
+## features
 
-## Headers
+### Headers
 
 ![](assets/heading.jpg)
 
-## URLs
+### URLs
 
 ![](assets/url.jpg)
 
-## Images
+### Images
 
 (and gifs!)
 
-### Preview on hover
+#### Preview on hover
 
 ![](assets/hover.jpg)
 
-### Preview inline
+#### Preview inline
 
 ![](assets/inline-image.gif)
 
-## Inline code
+### Inline code
 
 ![](assets/inline-code.jpg)
 
-## LaTeX
+### LaTeX
 
 ![](assets/latex.jpg)
 
 `$..$` for inline blocks and `$$..$$` for multiline blocks.
 
-### Live preview
+#### Live preview
 
 ![](assets/preview.jpg)
 
-## Emphasis
+### Emphasis
 
 ![](assets/emphasis.jpg)
 
-## Blockquote
+### Blockquote
 
 ![](assets/quote.jpg)
 
-## Horizontal rule
+### Horizontal rule
 
 ![](assets/horizontal-rule.jpg)
 
-## HTML tags
+### HTML tags
 
 ![](assets/html.gif)
  
-## List
+### List
 
 ![](assets/list.jpg)
 
-## Task list
+### Task list
 
 ![](assets/task-list.jpg)
 
-## Mermaid
+### Mermaid
 
 ![](assets/mermaid.jpg)
 
 Use `mermaid` as the language specifier in the code block.
 
-## Table
+### Table
 
 ![](assets/table.jpg)
 
-## Reveal source
+### Reveal source
 
 The concealed elements near the cursor are auto-revealed.
 
@@ -123,15 +123,15 @@ The concealed elements near the cursor are auto-revealed.
 
 To show all concealed elements, use the toggle button on the top-right. Alternatively, use the provided <kbd>Ctrl+Shift+m</kbd> shortcut. To reveal only the current line, toggle with <kbd>Ctrl+Shift+space</kbd>.
 
-## Performance
+### Performance
 
 The extension intelligently parses only the visible text for large files and employs caching extensively. Entire rendering takes well [under 100ms](https://www.pubnub.com/blog/how-fast-is-realtime-human-perception-and-technology/).
 
-## Vim bindings
+### Vim bindings
 
 The implementation uses the native editor instead of [Custom UI](https://code.visualstudio.com/api/extension-guides/custom-editors). All extensions should work as expected _including_ [Neo Vim](https://github.com/asvetliakov/vscode-neovim/).
 
-## Spec compliant
+### Spec compliant
 
 The parser follows the Github Flavoured Markdown (thus Commonmark) spec. It prevents inconsistency with the formats exported with spec compliant renderers.
 
