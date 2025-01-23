@@ -1,5 +1,8 @@
 <div align="center" id="top"><img src="assets/logo.png" align="center" alt="markless" width="425"></div>
-<div align="center">Inspired by Typora<sup>[diff](#differences)</sup></div>
+
+<div align="center">
+
+Inspired by Typora<sup>[diff](#differences)</sup></div>
 
 Preview markdown inline and extend the capabilities through existing VS Code extensions.
 
@@ -39,6 +42,7 @@ Preview markdown inline and extend the capabilities through existing VS Code ext
 - [DEBUG](#debug)
   - [Set workspace's setting `markless.debug` to `true`](#set-workspaces-setting-marklessdebug-to-true)
 - [Differences](#differences)
+
 </details>
 
 ## Differences with upstream
