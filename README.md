@@ -56,7 +56,9 @@ Inspired by Typora<sup>[diff](#differences)</sup></div>
 
 ### Differences between this and sean10's fork
 - Reverted colorful headings, now they're based on size again
-- Fixed and centered horizontal rule
+- Fix horizontal rule not displaying
+- Center Horizontal rule
+- Fixed LaTeX sizes
 
 ## features
 ### Headers
