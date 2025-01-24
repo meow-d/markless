@@ -176,6 +176,7 @@ function bootstrap(context) {
 				// console.log("value", value, "offset: ",  state.offset, "start: ", start , " end: ", end);
 			};
 		})()]],
+
 		["horizontalRule", ["thematicBreak", (() => {
 			const horizontalRuleDecoration = vscode.window.createTextEditorDecorationType({
 				color: "transparent",
@@ -192,6 +193,7 @@ function bootstrap(context) {
 				addDecoration(horizontalRuleDecoration, start, end);
 			};
 		})()]],
+
 		["quote", ["blockquote", (() => {
 			const quoteDecoration = vscode.window.createTextEditorDecorationType({
 				textDecoration: "none;",
@@ -205,6 +207,7 @@ function bootstrap(context) {
 					width: "3px",
 				}
 			});
+
 			return (start, end, node) => {
 				addDecoration(quoteDecoration, start, end);
 				const text = state.text.slice(start, end);
@@ -216,6 +219,7 @@ function bootstrap(context) {
 				}
 			};
 		})()]],
+
 		["list", ["listItem", (() => {
 			const getBulletDecoration = memoize((level) => {
 				return vscode.window.createTextEditorDecorationType({
@@ -268,6 +272,7 @@ function bootstrap(context) {
 				addDecoration(getlistRainbowDecoration(listLevel), textStart, textEnd);
 			};
 		})()]],
+
 		["latex", ["math", (() => {
 			const getTexDecoration = (() => {
 				const _getTexDecoration = memoize((texString, display, darkMode, fontSize, height) => {
@@ -286,15 +291,19 @@ function bootstrap(context) {
 				addDecoration(getTexDecoration(match[2], match[1].length > 1, numLines), start, end);
 			};
 		})()]],
+
 		["latex", ["inlineMath", (start, end) => state.types.get("math")(start, end)]],
+
 		["emphasis", ["emphasis", (start, end, node) => {
 			addDecoration(hideDecoration, start, start + 1);
 			addDecoration(hideDecoration, end - 1, end);
 		}]],
+
 		["emphasis", ["strong", (start, end, node) => {
 			addDecoration(hideDecoration, start, start + 2);
 			addDecoration(hideDecoration, end - 2, end);
 		}]],
+
 		["inlineCode", ["inlineCode", (() => {
 			const codeDecoration = vscode.window.createTextEditorDecorationType({
 				// outline: "1px dotted"
@@ -312,6 +321,7 @@ function bootstrap(context) {
 				addDecoration(transparentDecoration, end - 1, end);
 			};
 		})()]],
+
 		["mermaid", ["code", (() => {
 			const getMermaidDecoration = (() => {
 				const _getTexDecoration = memoize(async (source, darkMode, height, fontFamily) => {
@@ -343,6 +353,7 @@ function bootstrap(context) {
 				}
 			};
 		})()]],
+
 		["link", ["link", (start, end, node) => {
 			const text = state.text.slice(start, end);
 			const match = /\[(.+)\]\(.+?\)/.exec(text);
@@ -350,6 +361,7 @@ function bootstrap(context) {
 			addDecoration(hideDecoration, start, start + 1);
 			addDecoration(getUrlDecoration(false), start + match[1].length + 1, end);
 		}]],
+
 		["html", ["html", (() => {
 			const htmlDecoration = vscode.window.createTextEditorDecorationType({
 				color: "transparent",
@@ -372,6 +384,7 @@ function bootstrap(context) {
 				}
 			}
 		})()]],
+
 		["link", ["image", (start, end, node) => {
 			const text = state.text.slice(start, end);
 			const match = /!\[(.*)\]\(.+?\)/.exec(text);
@@ -399,6 +412,7 @@ function bootstrap(context) {
 			}
 			state.imageList.push([posToRange(start, end), imgPath, node.alt || " "]);
 		}]],
+
 		["emphasis", ["delete", (() => {
 			const strikeDecoration = vscode.window.createTextEditorDecorationType({
 				textDecoration: "line-through"
@@ -409,6 +423,7 @@ function bootstrap(context) {
 				addDecoration(strikeDecoration, start + 2, end - 2);
 			};
 		})()]],
+
 		["table", ["table", (() => {
 			const getTableDecoration = memoize((html, darkMode, fontFamily, fontSize, lineHeight) => {
 				const numRows = 1 + (html.match(/<tr>/g) || []).length;
