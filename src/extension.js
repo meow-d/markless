@@ -182,11 +182,11 @@ function bootstrap(context) {
 				color: "transparent",
 				textDecoration: "none; width: 0;",
 				before: {
-					contentText: "",
-					textDecoration: "none; position: absolute; mix-blend-mode: luminosity;",
+					contentText: "--------------------------------------------------------------------------------",
+					color: "transparent",
 					backgroundColor: "#ffaa00",
 					height: "0.15em",
-					width: "100%",
+					textDecoration: "none; position: absolute; mix-blend-mode: luminosity;",
 				}
 			});
 			return (start, end, node) => {
