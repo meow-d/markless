@@ -4,11 +4,13 @@
 
 Inspired by Typora<sup>[diff](#differences)</sup></div>
 
-Preview markdown inline and extend the capabilities through existing VS Code extensions.
+<div align="center">Preview markdown inline and extend the capabilities through existing VS Code extensions.</div>
 
+## Table of contents
 <details>
-<summary>Table of contents</summary>
+<summary>table of contents</summary>
 
+- [Table of contents](#table-of-contents)
 - [Differences with upstream](#differences-with-upstream)
   - [Differences between sean10's fork and upstream](#differences-between-sean10s-fork-and-upstream)
   - [Differences between this and sean10's fork](#differences-between-this-and-sean10s-fork)
