@@ -185,8 +185,8 @@ function bootstrap(context) {
 					contentText: "--------------------------------------------------------------------------------",
 					color: "transparent",
 					backgroundColor: "#ffaa00",
-					height: "0.15em",
-					textDecoration: "none; position: absolute; mix-blend-mode: luminosity;",
+					height: "0.1em",
+					textDecoration: "none; position: relative; top: 50%; mix-blend-mode: luminosity;",
 				}
 			});
 			return (start, end, node) => {
