@@ -52,10 +52,11 @@ Inspired by Typora<sup>[diff](#differences)</sup></div>
 - YAML/TOML frontmatter support
 - Bullet points uses common bullet point symbols instead of those super stylistic symbols
 - Headings are based on colors, not size
-- Various bug fixes
+- Various bug fixes (probably a lot)
 
 ### Differences between this and sean10's fork
 - Reverted colorful headings, now they're based on size again
+- Fixed and centered horizontal rule
 
 ## features
 ### Headers
