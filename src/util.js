@@ -53,11 +53,10 @@ const texToSvg = (() => {
     return (texString, display, height) => {
         const node = html.convert(texString, { display: display });
         const attributes = node.children[0].attributes;
-        if (height) {
-            // console.log('height: ', parseFloat(attributes["width"]), height, parseFloat(attributes["height"]), parseFloat(attributes["width"]) * height / parseFloat(attributes["height"]))
-            attributes["width"] = `${parseFloat(attributes["width"]) * height / parseFloat(attributes["height"])}px`;
-            attributes["height"] = `${height}px`;
-        }
+        // if (height) {
+        //     attributes["width"] = `${parseFloat(attributes["width"]) * height / parseFloat(attributes["height"])}px`;
+        //     attributes["height"] = `${height}px`;
+        // }
         attributes.preserveAspectRatio = "xMinYMin meet";
         // console.log(node);
         let svgElement = adaptor.innerHTML(node);
