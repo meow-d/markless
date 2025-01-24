@@ -179,7 +179,7 @@ function bootstrap(context) {
 		["horizontalRule", ["thematicBreak", (() => {
 			const horizontalRuleDecoration = vscode.window.createTextEditorDecorationType({
 				color: "transparent",
-				textDecoration: "none; display: inline-block; width: 0;",
+				textDecoration: "none; width: 0;",
 				before: {
 					contentText: "",
 					textDecoration: "none; position: absolute; mix-blend-mode: luminosity;",
