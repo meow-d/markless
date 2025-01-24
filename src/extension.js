@@ -182,7 +182,10 @@ function bootstrap(context) {
 				textDecoration: "none; display: inline-block; width: 0;",
 				before: {
 					contentText: "",
-					textDecoration: "none; position: absolute; background: #ffaa00; height: 0.15em; width: 100%; mix-blend-mode: luminosity;",
+					textDecoration: "none; position: absolute; mix-blend-mode: luminosity;",
+					backgroundColor: "#ffaa00",
+					height: "0.15em",
+					width: "100%",
 				}
 			});
 			return (start, end, node) => {
@@ -197,7 +200,9 @@ function bootstrap(context) {
 				color: "transparent",
 				before: {
 					contentText: "",
-					textDecoration: "none; position: absolute; background: #ffaa00; top: -0.2em; bottom: -0.2em; width: 3px; border-radius: 99px; mix-blend-mode: luminosity;",
+					textDecoration: "none; position: absolute; top: -0.2em; bottom: -0.2em; border-radius: 99px; mix-blend-mode: luminosity;",
+					backgroundColor: "#ffaa00",
+					width: "3px",
 				}
 			});
 			return (start, end, node) => {
