@@ -3,7 +3,7 @@
 	"publisher": "meow-d",
 	"displayName": "Markless_meow-d",
 	"description": "Inline WYSIWYG markdown preview. supports mermaid, latex and, image rendering; and works with Vim mode. Meow_d's personal fork of sean10's fork.",
-	"version": "1.0.28",
+	"version": "1.0.29",
 	"engines": {
 		"vscode": "^1.56.0"
 	},
